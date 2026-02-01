@@ -18,4 +18,25 @@ Create Arduino IDE code for ESP32-C6
 5.2. Set RGB led :
 5.2.1. if speed <512 (255 - (speed / 2), (speed / 2), 0)
 5.2.2. if speed >=512 (0, 255 - ((speed - 512) / 2), ((speed - 512) / 2))
+------------------------------------------------------------------------------------------
+Create Arduino IDE code for ESP32-C6
+1. HTTP WEB Server using WebServer.h (Not the old ESPAsyncWebServer)
+
+2. Send html 'Sinus generator' web side contains (using R"rawliteral(<web text>)rawliteral";) command ):
+2.1. 'Sinus generator' title
+2.2. an edit control for IP address by default it has '192.168.50.287' value with label 'IP Address:'
+2.3. edit line 'Freq' with label 'frequency (Hz)' , set 100 
+2.4. '100 Hz' button send html get command '/?Freq=100' 
+2.5. '*1.41' button change 'Freq' = ('Freq' * 1.41) send html get command '/?Freq=<Freq>'
+2.6. '/1.41' button change 'Freq' = ('Freq' / 1.41) send html get command '/?Freq=<Freq>'
+3. Set a timer interrupt to 100usec period
+4. Let 'signalPhase' = 0 (the range is 0-360 auto reset ) in the setup.
+5. Let 'frequency' = 100 in the setup.
+6. Web client can change the 'frequency' by html command
+7. timer interrupt calculate the new PWM value from 'signalPhase', and 'frequency' and set PWM value (GPIO 10) (0 = Min, 1023 = Max)
+8. every second print the current siganlPhase and frequency to Serial
+------------------------------------------------------------------------------------------
+Create Arduino IDE code for ESP32
+1. Use LiquidCrystal i2c
+2. Create clock get it from net golbal time
  
