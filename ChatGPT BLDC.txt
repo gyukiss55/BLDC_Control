@@ -1,1 +1,21 @@
-Create a html containing a edit control for IP address by default it has 
+Create a html containing:
+1. Title 'BLDC Speed Control'
+2. an edit control for IP address by default it has '192.168.50.111' value with label 'IP Address:'
+3. an edit control for numeric value limited 0-1023 , by default 0 with label 'Speed'
+4. a slider control which has effect on 'speed' edit control
+5. six buttons '+1' '-1' '+10' '-10' '+100' '-100' effecting on 'speed' edit control +1,-1,+10,-10,...
+
+Changing the speed value, send GET command with message 'Speed=<speed value>'
+------------------------------------------------------------------------------------------
+Create Arduino IDE code for ESP32-C6
+
+1. HTTP WEB Server
+2. Send html 'BLDC Speed Control' you suggested before
+3. Set PWM output GPIO10 with frequency 78kHz, 1024 resolution, start value 0.
+4. Set RGB led (GPIO 8) start blinking  1 Hz with RGB (255,0,0)
+5. Receiving 'http://<IP>/?Speed=<value>':
+5.1. set PWM output to value
+5.2. Set RGB led :
+5.2.1. if speed <512 (255 - (speed / 2), (speed / 2), 0)
+5.2.2. if speed >=512 (0, 255 - ((speed - 512) / 2), ((speed - 512) / 2))
+ 
