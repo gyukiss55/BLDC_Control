@@ -5,7 +5,7 @@
 #include <Adafruit_NeoPixel.h>
 
 /* ========= USER CONFIG ========= */
-const char* ssid     = "RTAX999";
+const char* ssid     = "ASUS_98_2G";
 const char* password = "LiDoDa#959285$";
 
 /* ========= PINS ========= */

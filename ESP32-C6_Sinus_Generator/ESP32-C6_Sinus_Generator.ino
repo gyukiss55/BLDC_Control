@@ -3,7 +3,7 @@
 #include <math.h>
 
 // ================= WiFi =================
-const char* ssid     = "RTAX999";
+const char* ssid     = "ASUS_98_2G";
 const char* password = "LiDoDa#959285$";
 
 // ================= Globals =================
@@ -35,7 +35,7 @@ const char HTML_PAGE[] PROGMEM = R"rawliteral(
   <input type="text" id="ip" value="%IP%"><br><br>
 
   <label>frequency (Hz):</label>
-  <input type="text" id="freq" value="100"><br><br>
+  <input type="text" id="freq" value="%FR%"><br><br>
 
   <button onclick="location.href='/?Freq=100'">100 Hz</button>
 
@@ -83,6 +83,7 @@ void handleRoot() {
   }
   String page = HTML_PAGE;
   page.replace("%IP%", WiFi.localIP().toString());
+  page.replace("%FR%", String(frequency, 2));
   server.send(200, "text/html", page);
   Serial.print("Connect:");
   Serial.println(WiFi.localIP().toString());
@@ -111,7 +112,7 @@ void setup() {
   ledcWrite(pwmPin, 0);
 
   // ================= Timer =================
-/*
+/**/
   esp_timer_create_args_t timer_args = {
     .callback = &sinusTimerCallback,
     .arg = NULL,
@@ -122,7 +123,7 @@ void setup() {
   esp_timer_create(&timer_args, &sinus_timer);
   esp_timer_start_periodic(sinus_timer, 100); // 100 us
 
-*/
+
 
   // ================= Web Server =================
   server.on("/", handleRoot);
