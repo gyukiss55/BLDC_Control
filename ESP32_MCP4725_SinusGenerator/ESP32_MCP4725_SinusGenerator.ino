@@ -20,6 +20,8 @@ Adafruit_MCP4725 dac;
 /* ===================== Signal ===================== */
 volatile float signalPhase = 0.0f;   // 0–360 deg
 volatile float frequency   = 100.0f; // Hz
+volatile uint32_t millisTIT   = 0; // msec
+volatile uint16_t dacValue   = 0.0f; // 0 V
 
 /* ===================== Timer ===================== */
 esp_timer_handle_t sinus_timer;
@@ -77,8 +79,9 @@ void sinusTimerCallback(void *arg) {
 
   // sine calculation (0–4095)
   float rad = signalPhase * DEG_TO_RAD;
-  uint16_t dacValue = (uint16_t)((sin(rad) * 0.5f + 0.5f) * 4095.0f);
+  dacValue = (uint16_t)((sin(rad) * 0.5f + 0.5f) * 4095.0f);
 
+  millisTIT = millis ();
   //dac.setVoltage(dacValue, false);
 
   portEXIT_CRITICAL_ISR(&timerMux);
@@ -112,7 +115,7 @@ void setup() {
 
   /* I2C */
   Wire.begin(8, 9);   // SDA, SCL
-  //dac.begin(DAC_ADDR);
+  dac.begin(DAC_ADDR);
 
   /* WiFi */
   WiFi.begin(ssid, password);
@@ -144,15 +147,31 @@ void setup() {
 void loop() {
   server.handleClient();
 
+  {
+    static uint32_t lastMS = 0;
+    uint16_t dacInt16 = 0;
+    portENTER_CRITICAL(&timerMux);
+    if (lastMS != millisTIT) {
+      lastMS = millisTIT;
+      dacInt16 = dacValue;
+    }
+    portEXIT_CRITICAL(&timerMux);
+    dac.setVoltage(dacInt16, false);
+
+  }
+
   static uint32_t lastPrint = 0;
   if (millis() - lastPrint >= 1000) {
     lastPrint = millis();
     portENTER_CRITICAL(&timerMux);
-    Serial.print("Phase: ");
-    Serial.print(signalPhase);
-    Serial.print(" deg, Frequency: ");
-    Serial.print(frequency);
-    Serial.println(" Hz");
+    float  sph =  signalPhase;
+    float  fr =  frequency;
     portEXIT_CRITICAL(&timerMux);
+
+    Serial.print("Phase: ");
+    Serial.print(sph);
+    Serial.print(" deg, Frequency: ");
+    Serial.print(fr);
+    Serial.println(" Hz");
   }
 }
