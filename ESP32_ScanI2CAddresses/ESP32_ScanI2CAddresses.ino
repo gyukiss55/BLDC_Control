@@ -1,8 +1,8 @@
 // ESP32_ScanI2CAddresses.ino
 #include <Wire.h>
 
-#define I2C_SDA 21
-#define I2C_SCL 22
+#define I2C_SDA 8
+#define I2C_SCL 9
 
 void setup() {
   Serial.begin(115200);
