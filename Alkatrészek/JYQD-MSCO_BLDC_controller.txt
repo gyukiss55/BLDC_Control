@@ -1,0 +1,27 @@
+Leírás:
+- Üzemi motor feszültség: 12...36V DC
+- Üzemi vezérlő feszültség: 5V DC
+- Üzemi hall feszültség: 5V DC
+- Üzemi áram: max 15A
+- Vezérlő teljesítmény: max 500W
+- Sebesség vezérlő feszültsége: 0.1...5V DC
+- Üzemi hőmérséklet: -40...85°C
+- Páratartalom: 90% relatív páratartalom
+- Túláramvédelem
+- Sebességszabályozó jel
+- Méret: 63x42x17mm
+
+Motor csatlakozók:
+- P+: 12...36V DC
+- P-: motor táp GND
+- MC: W motorfázis
+- MB: V motorfázis
+- MA: U motorfázis
+
+Vezérlő csatlakozók:
+- 5V kimenet: 5V DC
+- GND: vezérlő GND
+- VR : sebesség vezérlő feszültség bemenete: 0.1...5V DC (A fordulatszám 10...100%)
+- ZF: motor forgásirány fordítás (5V DC vagy GND)
+- M (Signal): sebesség impulzus kimeneti port, egy impulzuskör kimenete = motor pólusszáma x 3
+Bővített forgalmazói/gyártói információk (EU 2023/988 rendelet)
