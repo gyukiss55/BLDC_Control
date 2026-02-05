@@ -14,7 +14,7 @@ esp_timer_handle_t sinus_timer;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
 // ================= PWM =================
-const int pwmPin        = 10;   // GPIO 10
+const int pwmPin        = 21;   // GPIO 21
 const int pwmResolution = 10;   // 0–1023
 
 WebServer server(80);
@@ -94,7 +94,7 @@ void setup() {
 
   // Initial values
   signalPhase = 0.0f;
-  frequency   = 100.0f;
+  frequency   = 10.0f;
 
   // ================= WiFi =================
   WiFi.begin(ssid, password);

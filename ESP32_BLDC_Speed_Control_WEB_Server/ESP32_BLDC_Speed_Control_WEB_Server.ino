@@ -3,13 +3,15 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <Adafruit_NeoPixel.h>
+#include <Adafruit_MCP4725.h>
 
 /* ========= USER CONFIG ========= */
 const char* ssid     = "ASUS_98_2G";
 const char* password = "LiDoDa#959285$";
-
+ 
 /* ========= PINS ========= */
-#define PWM_PIN     10
+#define PWM_PIN     21
+#define DIR_PIN     47
 #define RGB_PIN     8
 
 /* ========= PWM CONFIG ========= */
@@ -24,8 +26,12 @@ Adafruit_NeoPixel rgb(NUM_LEDS, RGB_PIN, NEO_GRB + NEO_KHZ800);
 /* ========= WEB SERVER ========= */
 WebServer server(80);
 
+/* ===================== DAC ===================== */
+Adafruit_MCP4725 dac;
+#define DAC_ADDR 0x60
+
 /* ========= GLOBALS ========= */
-uint16_t speedValue = 0;
+uint16_t speedValue = 20;
 bool updateSpeed = false;
 
 /* Blink state */
@@ -56,7 +62,7 @@ button{width:70px;margin:4px}
 <label>Speed:</label>
 <input type="number" id="speed" min="0" max="1023" value="0"><br><br>
 
-<input type="range" id="slider" min="0" max="1023" value="0" style="width:100%"><br><br>
+<input type="range" id="slider" min="0" max="1023" value="%SP%" style="width:100%"><br><br>
 
 <button onclick="chg(1)">+1</button>
 <button onclick="chg(-1)">-1</button><br>
@@ -149,6 +155,7 @@ void readSpeedValue ()
   speedValue = constrain(server.arg("Speed").toInt(), 0, 1023);
   updateSpeed = true;
   ledcWrite(PWM_PIN, speedValue);
+  dac.setVoltage(speedValue, false);
   setRGBfromSpeed(speedValue);
 
   Serial.print("Speed=");
@@ -164,6 +171,7 @@ void handleRoot() {
   }
   String page = HTML_PAGE;
   page.replace("%IP%", WiFi.localIP().toString());
+  page.replace("%SP%", String(speedValue));
   server.send(200, "text/html", page);
   Serial.print("Connect:");
   Serial.println(WiFi.localIP().toString());
@@ -191,6 +199,35 @@ void blinkStartupLED() {
   }
 }
 
+void testSpeed ()
+{
+  int halfcycle =100;
+  speedValue = 350;
+  ledcWrite(PWM_PIN, speedValue);
+  dac.setVoltage(speedValue, false);
+  delay (1000);
+
+  bool dir = false;
+  for (int i = 0; i<10000; i++)
+   {
+    speedValue = 350;
+    ledcWrite(PWM_PIN, speedValue);
+    dac.setVoltage(speedValue, false);
+    delay (halfcycle);
+
+    speedValue = 200;
+    ledcWrite(PWM_PIN, speedValue);
+    dac.setVoltage(speedValue, false);
+    delay (halfcycle/50);
+
+    digitalWrite(DIR_PIN, dir?HIGH:LOW);
+    dir = !dir;
+
+  }
+
+}
+
+
 /* ========= SETUP ========= */
 void setup() {
   Serial.begin(115200);
@@ -199,6 +236,9 @@ void setup() {
 
   ledcAttach(PWM_PIN, PWM_FREQ, PWM_RESOLUTION);
   ledcWrite(PWM_PIN, 0);
+
+  pinMode(DIR_PIN, OUTPUT);
+  digitalWrite(DIR_PIN, LOW);
 
   /* RGB */
   rgb.begin();
@@ -221,6 +261,16 @@ void setup() {
   server.on("/?", handleSpeed);
   server.onNotFound(handleNotFound);
   server.begin();
+
+    /* I2C */
+  Wire.begin(8, 9);   // SDA, SCL
+  dac.begin(DAC_ADDR);
+
+  ledcWrite(PWM_PIN, speedValue);
+  dac.setVoltage(speedValue, false);
+
+  testSpeed ();
+
 }
 
 /* ========= LOOP ========= */
