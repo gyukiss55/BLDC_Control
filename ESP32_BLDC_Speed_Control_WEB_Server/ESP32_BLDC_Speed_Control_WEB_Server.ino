@@ -177,6 +177,7 @@ void handleRoot() {
     readSpeedValue ();
     if (server.hasArg("Direction")) {
       direction = (server.arg("Direction") == "true");
+      digitalWrite(DIR_PIN, direction?HIGH:LOW);
     }
     server.send(200, "text/plain", "OK");
     return;
