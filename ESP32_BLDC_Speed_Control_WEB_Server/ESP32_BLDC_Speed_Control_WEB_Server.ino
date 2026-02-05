@@ -32,6 +32,7 @@ Adafruit_MCP4725 dac;
 
 /* ========= GLOBALS ========= */
 uint16_t speedValue = 20;
+bool direction = true;
 bool updateSpeed = false;
 
 /* Blink state */
@@ -71,18 +72,25 @@ button{width:70px;margin:4px}
 <button onclick="chg(100)">+100</button>
 <button onclick="chg(-100)">-100</button>
 
+<label>Direction:</label><br>
+<input type="radio" name="direction" value="true" checked> true<br>
+<input type="radio" name="direction" value="false"> %DR%<br><br>
+
 <div id="status">Status: —</div>
 
 <script>
 const s=document.getElementById("speed");
 const r=document.getElementById("slider");
+const dr=document.getElementById("direction");
 const st=document.getElementById("status");
 
 function clamp(v){return Math.min(1023,Math.max(0,v));}
 
-function send(v){
+function send(){
+  let speed = document.getElementById("speed").value;
+  let dir   = document.querySelector('input[name="direction"]:checked').value;
   const ip=document.getElementById("ip").value;
-  const url=`http://${ip}/?Speed=${v}`;
+  const url=`http://${ip}/?Speed=${speed}&Direction={dir}`;
   st.textContent="Status: Sent → "+url;
   fetch(url).catch(()=>{st.textContent="Status: Failed → "+url;});
 }
@@ -91,13 +99,14 @@ function set(v){
   v=clamp(v);
   s.value=v;
   r.value=v;
-  send(v);
+  send();
 }
 
 function chg(d){ set(parseInt(s.value)+d); }
 
 s.onchange=()=>set(parseInt(s.value));
 r.oninput=()=>set(parseInt(r.value));
+dr.onchange=()=>send();
 </script>
 
 </body>
@@ -166,12 +175,16 @@ void readSpeedValue ()
 void handleRoot() {
   if (server.hasArg("Speed")) {
     readSpeedValue ();
+    if (server.hasArg("Direction")) {
+      direction = (server.arg("Direction") == "true");
+    }
     server.send(200, "text/plain", "OK");
     return;
   }
   String page = HTML_PAGE;
   page.replace("%IP%", WiFi.localIP().toString());
   page.replace("%SP%", String(speedValue));
+  page.replace("%DR%", direction ? String('true'):String('false'));
   server.send(200, "text/html", page);
   Serial.print("Connect:");
   Serial.println(WiFi.localIP().toString());
@@ -269,7 +282,7 @@ void setup() {
   ledcWrite(PWM_PIN, speedValue);
   dac.setVoltage(speedValue, false);
 
-  testSpeed ();
+  //testSpeed ();
 
 }
 
