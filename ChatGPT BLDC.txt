@@ -90,6 +90,7 @@ Device ESP32-S3-DevModul
 2.4.4 '-10' button change 'Speed' = ('Speed' - 10) 
 2.4.5 '+100' button change 'Speed' = ('Speed' + 100) 
 2.4.6 '-100' button change 'Speed' = ('Speed' - 100) 
+2.4.7 slider control with speed value (range 0-1023) effects to speed value and show it if other control change speed 
 2.5. 'Direction' radio button set 'direction' 'true' or 'false'
 2.5.1 If 'Direction' changes, than reset the speed to 0 
  

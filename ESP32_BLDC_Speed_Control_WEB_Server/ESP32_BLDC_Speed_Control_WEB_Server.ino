@@ -5,7 +5,7 @@
 #include <Adafruit_NeoPixel.h>
 #include <Adafruit_MCP4725.h>
 
-/* ========= USER CONFIG ========= */
+/* ================= WIFI ================= */
 const char* ssid     = "ASUS_98_2G";
 const char* password = "LiDoDa#959285$";
 
@@ -205,4 +205,5 @@ void loop()
     Serial.println(direction);
   }
 }
+
 
