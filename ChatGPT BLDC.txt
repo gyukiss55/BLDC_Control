@@ -21,7 +21,6 @@ Create Arduino IDE code for ESP32-C6
 ------------------------------------------------------------------------------------------
 Create Arduino IDE code for ESP32-C6
 1. HTTP WEB Server using WebServer.h (Not the old ESPAsyncWebServer)
-
 2. Send html 'Sinus generator' web side contains (using R"rawliteral(<web text>)rawliteral";) command ):
 2.1. 'Sinus generator' title
 2.2. an edit control for IP address by default it has '192.168.50.287' value with label 'IP Address:'
@@ -36,7 +35,69 @@ Create Arduino IDE code for ESP32-C6
 7. timer interrupt calculate the new PWM value from 'signalPhase', and 'frequency' and set PWM value (GPIO 10) (0 = Min, 1023 = Max)
 8. every second print the current siganlPhase and frequency to Serial
 ------------------------------------------------------------------------------------------
-Create Arduino IDE code for ESP32
+Create Arduino IDE code for ESP32 : ESP32_LCD_Clock
 1. Use LiquidCrystal i2c
 2. Create clock get it from net golbal time
+ESP32_LCD_CustomChars
+------------------------------------------------------------------------------------------
+Create ESP32_ScanI2CAddresses.ino for ESP32 scanning and dumping the found I2C addresses
  
+ 
+ ------------------------------------------------------------------------------------------
+Create ESP32_DAC_MCP4726.ino for signale generator
+Device ESP32-S3-DevModul
+1. HTTP WEB Server using WebServer.h 
+
+2. Send html 'Sinus generator' web side contains (using R"rawliteral(<web text>)rawliteral";) command ):
+2.1. 'Sinus generator' title
+2.2. an edit control for IP address by default it has '192.168.50.287' value with label 'IP Address:'
+2.3. edit line 'Freq' (set 100 by default ), with label 'frequency (Hz)' 
+2.4. 'Send' button activate send  html get command '/?Freq=<Freq>'
+2.5. '*1.41' button change 'Freq' = ('Freq' * 1.41) send html get command '/?Freq=<Freq>'
+2.6. '/1.41' button change 'Freq' = ('Freq' / 1.41) send html get command '/?Freq=<Freq>'
+
+3. Set a timer interrupt to 100usec period
+4. Let 'signalPhase' = 0 (the range is 0-360 auto reset ) in the setup.
+5. Let 'frequency' = 100 in the setup.
+6. Web client can change the 'frequency' by html command
+7. Setup MCP4726 I2C interface
+8. timer interrupt calculate the new analogue value to transmit to  MCP4726 IC2 with max amlitude
+9. every second print the current siganlPhase and frequency to Serial
+
+
+ ------------------------------------------------------------------------------------------
+Create ESP32_SpeedWebServer.ino for controling BLDC Motor speed 
+Device ESP32-S3-DevModul
+1. HTTP WEB Server using WebServer.h
+1.1 there are 3 global parameter what is handled by the html too.
+1.1.1. int16_t speed (in range 0-1023)
+1.1.2. bool enableMotor by default false
+1.1.3. bool direction means forward by default true 
+
+2. Send html 'Speed Web Server' web side contains (using R"rawliteral(<web text>)rawliteral";) command ):
+2.0.0  Update 'IPAddress' value with WebServer IP address
+2.0.1  Update 'speed' value with global int16_t 'speed'
+2.0.2  Update 'enableMotor' value with global bool 'enableMotor'
+2.0.3  Update 'direction' value with global bool 'direction'
+2.1. 'Speed Web Server' title
+2.2. an edit control for IP address of WEB server with label 'IP Address:'
+2.3. 'Enable' radio button set 'enableMotor' 'true' or 'false' 
+2.3.1 if 'Enable' changes, than reset the speed to 0 
+2.4. edit line 'Speed' (set 0 by default in range 0-1023), with label 'Speed' 
+2.4.1 '+1' button change 'Speed' = ('Speed' + 1) 
+2.4.2 '-1' button change 'Speed' = ('Speed' - 1) 
+2.4.3 '+10' button change 'Speed' = ('Speed' + 10) 
+2.4.4 '-10' button change 'Speed' = ('Speed' - 10) 
+2.4.5 '+100' button change 'Speed' = ('Speed' + 100) 
+2.4.6 '-100' button change 'Speed' = ('Speed' - 100) 
+2.5. 'Direction' radio button set 'direction' 'true' or 'false'
+2.5.1 If 'Direction' changes, than reset the speed to 0 
+ 
+2.6 If any parameters changes () , than send  GET command with: '/?Enable=<enableMotor>&Speed=<speed>&Direction=<direction>'
+
+3. Let bool 'enableMotor' = false in the setup. effect on GPIO48 digital output (High/Low)
+5. Let bool 'direction' = true in the setup. effect on GPIO47 digital output (High/Low)
+4. Let int16_t 'speed' = 0 (the range is 0-1023 ) in the setup.
+6. Web client can change the 'speed' and 'direction' by html command
+7. The speed is used to DAC 'Adafruit_MCP4725' address 0x60
+8. every second print the current enableMotor, speed and direction to Serial
